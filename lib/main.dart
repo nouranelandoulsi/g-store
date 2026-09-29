@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'GStore.dart';
+//import 'GStore.dart';
+import 'sign_in_screen.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -30,7 +31,8 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const GStore(),
+      //home: const GStore(),
+      home: const SignInScreen(),
     );
   }
 }
