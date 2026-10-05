@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_widgets.dart';
+import 'validators.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -13,12 +14,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  String? usernameError;
+  String? emailError;
+  String? passwordError;
+
   @override
   void dispose() {
     usernameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void _submit() {
+    setState(() {
+      usernameError = Validators.username(usernameController.text);
+      emailError = Validators.email(emailController.text);
+      passwordError = Validators.password(passwordController.text);
+    });
+
+    if (usernameError == null && emailError == null && passwordError == null) {
+      _showInfoDialog();
+    }
+  }
+
+  void _showInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Informations',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Username : ${usernameController.text.trim()}'),
+            const SizedBox(height: 6),
+            Text('Email : ${emailController.text.trim()}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -48,18 +93,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 20),
 
                   RoundedField(controller: usernameController, hint: 'username'),
+                  FieldError(usernameError),
                   const SizedBox(height: 14),
                   RoundedField(
                     controller: emailController,
                     hint: 'email',
                     keyboardType: TextInputType.emailAddress,
                   ),
+                  FieldError(emailError),
                   const SizedBox(height: 14),
                   RoundedField(
                     controller: passwordController,
                     hint: 'password',
                     obscureText: true,
                   ),
+                  FieldError(passwordError),
                   const SizedBox(height: 16),
 
                   Align(
@@ -83,9 +131,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   GradientButton(
                     label: 'SIGN UP',
                     colors: const [kOrange, Color(0xFFF08A4B)],
-                    onPressed: () {
-                      // TODO: brancher la logique de création de compte
-                    },
+                    onPressed: _submit,
                   ),
                 ],
               ),

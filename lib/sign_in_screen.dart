@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'app_widgets.dart';
 import 'sign_up_screen.dart';
+import 'validators.dart';
+import 'home_screen.dart';
+import 'forgot_password_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -14,11 +17,28 @@ class _SignInScreenState extends State<SignInScreen> {
   final passwordController = TextEditingController();
   bool obscurePassword = true;
 
+  String? emailError;
+  String? passwordError;
+
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void _submit() {
+    setState(() {
+      emailError = Validators.email(emailController.text);
+      passwordError = Validators.password(passwordController.text);
+    });
+
+    if (emailError == null && passwordError == null) {
+      // TODO: brancher la logique d'authentification
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    }
   }
 
   @override
@@ -52,6 +72,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     hint: 'email',
                     keyboardType: TextInputType.emailAddress,
                   ),
+                  FieldError(emailError),
                   const SizedBox(height: 14),
                   RoundedField(
                     controller: passwordController,
@@ -68,14 +89,13 @@ class _SignInScreenState extends State<SignInScreen> {
                           setState(() => obscurePassword = !obscurePassword),
                     ),
                   ),
+                  FieldError(passwordError),
                   const SizedBox(height: 28),
 
                   GradientButton(
                     label: 'SIGN IN',
                     colors: const [kOrange, Color(0xFFF08A4B)],
-                    onPressed: () {
-                      // TODO: brancher la logique d'authentification
-                    },
+                    onPressed: _submit,
                   ),
                   const SizedBox(height: 14),
                   GradientButton(
@@ -93,7 +113,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        // TODO: naviguer vers l'écran mot de passe oublié
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => const ForgotPasswordScreen()));
                       },
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
